@@ -20,24 +20,33 @@ Generare Automată de Rapoarte (Audit): La finalul scanării, sistemul genereaz�
 Limbaj de programare central:
 
 C# (pe platforma .NET 8 sau .NET 9)
+
 Interfață Grafică (Frontend):
 
 WPF (Windows Presentation Foundation) – Pentru randarea interfeței.
+
 XAML – Limbajul de markup pentru design.
+
 CommunityToolkit.Mvvm – Pentru implementarea curată a șablonului de design MVVM (Model-View-ViewModel) și Data Binding.
+
 Inteligenta Artificială & Machine Learning:
 
 ML.NET (Microsoft.ML) – Framework-ul principal pentru orchestrarea fluxului de ML.
+
 ONNX Runtime (Microsoft.ML.OnnxTransformer) – Utilizat pentru încărcarea și rularea eficientă a modelului AI pre-antrenat (format .onnx) capabil să detecteze manipulările faciale/video.
+
 Procesare Video & Media:
 
 FFmpeg.Autogen – Wrapper C# peste librăriile native FFmpeg, utilizat pentru decodarea de înaltă performanță a fișierelor video (MP4, MKV) la nivel de cadru (frame).
+
 Baze de Date & Persistență:
 
 SQLite – Bază de date relațională, ușoară, integrată local.
+
 Entity Framework Core (EF Core) – ORM (Object-Relational Mapper) folosit pentru lucrul cu baza de date folosind obiecte C#, migrații și interogări LINQ.
 Arhitectură, Raportare și Testare:
 
 QuestPDF – Librărie modernă de înaltă performanță pentru generarea rapoartelor PDF de audit.
+
 Dependency Injection (DI) – Utilizat prin Microsoft.Extensions.DependencyInjection pentru a decupla componentele (bune practici SOLID).
 xUnit & Moq – Pentru implementarea testelor unitare și de integrare, validând corectitudinea Use Case-urilor.
