@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/assets/" />
+  <Folder Name="/assets/reports/" />
+  <Folder Name="/src/">
+    <Project Path="CyberShield.Application/CyberShield.Application.csproj" />
+    <Project Path="CyberShield.Domain/CyberShield.Domain.csproj" />
+    <Project Path="CyberShield.Infrastructure/CyberShield.Infrastructure.csproj" />
+    <Project Path="CyberShield.Presentation/CyberShield.Presentation.csproj" />
+    <Project Path="CyberShield.Shared/CyberShield.Shared.csproj" />
+    <Project Path="CyberShield.UI.Wpf/CyberShield.UI.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="CyberShield.Tests.Integration/CyberShield.Tests.Integration.csproj" />
+    <Project Path="CyberShield.Tests.Unit/CyberShield.Tests.Unit.csproj" />
+  </Folder>
+</Solution>
