@@ -64,27 +64,38 @@ public sealed class ScanRepository : IScanRepository
         await _db.SaveChangesAsync(ct);
     }
 
-    public async Task FinalizeScanAsync(Guid scanId, double overallScore, IReadOnlyList<ScanSegment> segments, CancellationToken ct)
+    public async Task FinalizeScanAsync(
+    Guid scanId,
+    double overallScore,
+    IReadOnlyList<ScanSegment> segments,
+    string? reportPath,
+    CancellationToken ct)
     {
-        var scan = await _db.Scans.FirstAsync(x => x.Id == scanId, ct);
+        
+        var scan = await _db.Scans
+            .Include(s => s.Segments)
+            .FirstOrDefaultAsync(x => x.Id == scanId, ct);
+
+        if (scan is null) return;
 
         scan.OverallScore = overallScore;
         scan.FinishedAt = DateTimeOffset.UtcNow;
         scan.Status = "Completed";
+        scan.ReportPath = reportPath;
 
-        var existing = _db.Segments.Where(x => x.ScanSessionId == scanId);
-        _db.Segments.RemoveRange(existing);
+        
+        scan.Segments.Clear();
 
-        foreach (var s in segments)
+        
+        foreach (var seg in segments)
         {
-            _db.Segments.Add(new ScanSegmentEntity
+            scan.Segments.Add(new ScanSegmentEntity
             {
-                Id = s.Id,
+                Id = Guid.NewGuid(),
                 ScanSessionId = scanId,
-                StartMs = (long)s.Start.TotalMilliseconds,
-                EndMs = (long)s.End.TotalMilliseconds,
-                Score = s.Score,
-                Notes = s.Notes
+                Start = seg.Start,
+                End = seg.End,
+                Score = seg.Score 
             });
         }
 

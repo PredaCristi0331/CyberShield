@@ -1,4 +1,7 @@
-﻿namespace CyberShield.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace CyberShield.Domain.Entities;
 
 public sealed class ScanSession
 {
@@ -9,8 +12,11 @@ public sealed class ScanSession
     public DateTimeOffset? FinishedAt { get; set; }
 
     public string ModelVersion { get; set; } = "unknown";
-    public double OverallScore { get; set; } 
+    public double OverallScore { get; set; }
     public string Status { get; set; } = "Running";
 
-    public List<ScanSegment> Segments { get; } = [];
+    
+    public string? ReportPath { get; set; }
+
+    public List<ScanSegment> Segments { get; } = new();
 }

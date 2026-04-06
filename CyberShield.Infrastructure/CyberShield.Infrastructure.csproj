@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.5" />
     <PackageReference Include="Microsoft.ML" Version="5.0.0" />
     <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="5.0.0" />
+    <PackageReference Include="NWaves" Version="0.9.6" />
     <PackageReference Include="QuestPDF" Version="2026.2.4" />
   </ItemGroup>
 

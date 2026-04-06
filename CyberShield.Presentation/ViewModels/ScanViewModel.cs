@@ -44,6 +44,13 @@ public class ScanViewModel : ObservableObject
         }
     }
 
+    private double _audioScore;
+    public double AudioScore
+    {
+        get => _audioScore;
+        set => SetProperty(ref _audioScore, value);
+    }
+
     private string _statusText = "Idle";
     public string StatusText
     {
@@ -155,22 +162,25 @@ public class ScanViewModel : ObservableObject
         ReportPath = null;
         OverallScore = 0;
         OverlayIntensity = 0;
+        AudioScore = 0; 
 
         _cts = new CancellationTokenSource();
 
         try
         {
-            
             if (_useCase == null)
             {
                 var random = new Random();
                 double simulatedScore = random.NextDouble();
+                double simulatedAudioScore = random.NextDouble(); 
+
                 for (int i = 0; i <= 100; i += 5)
                 {
                     _cts.Token.ThrowIfCancellationRequested();
 
                     ProgressPercent = i;
                     StatusText = i < 50 ? $"Decodare cadre FFmpeg... {i}%" : $"Inferență ML.NET/ONNX... {i}%";
+
                     if (simulatedScore > 0.5)
                     {
                         OverlayIntensity = (i / 100.0) * simulatedScore;
@@ -179,16 +189,18 @@ public class ScanViewModel : ObservableObject
                     {
                         OverlayIntensity = 0;
                     }
+
                     
+                    AudioScore = (i / 100.0) * simulatedAudioScore;
 
                     await Task.Delay(150, _cts.Token);
                 }
 
                 OverallScore = simulatedScore;
+                AudioScore = simulatedAudioScore; 
 
-                Segments.Clear(); 
+                Segments.Clear();
 
-                
                 if (simulatedScore >= 0.5)
                 {
                     Segments.Add(new CyberShield.Domain.Entities.ScanSegment
@@ -214,49 +226,50 @@ public class ScanViewModel : ObservableObject
                 var reportsFolder = System.IO.Path.Combine(appFolder, "assets", "reports");
                 System.IO.Directory.CreateDirectory(reportsFolder);
 
-                
                 ReportPath = System.IO.Path.Combine(reportsFolder, $"CyberShield_Report_{DateTime.Now.Ticks}.pdf");
 
-                
-                QuestPDF.Settings.License = LicenseType.Community;
+                QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
-                
-                Document.Create(container =>
+               
+                QuestPDF.Fluent.Document.Create(container =>
                 {
                     container.Page(page =>
                     {
-                        page.Size(PageSizes.A4);
-                        page.Margin(2, Unit.Centimetre);
-                        page.PageColor(Colors.White);
+                        page.Size(QuestPDF.Helpers.PageSizes.A4);
+                        page.Margin(2, QuestPDF.Infrastructure.Unit.Centimetre);
+                        page.PageColor(QuestPDF.Helpers.Colors.White);
                         page.DefaultTextStyle(x => x.FontSize(12));
 
                         page.Header()
                             .Text("CyberShield Deepfake Report")
-                            .SemiBold().FontSize(24).FontColor(Colors.Blue.Darken2);
+                            .SemiBold().FontSize(24).FontColor(QuestPDF.Helpers.Colors.Blue.Darken2);
 
                         page.Content()
-                            .PaddingVertical(1, Unit.Centimetre)
+                            .PaddingVertical(1, QuestPDF.Infrastructure.Unit.Centimetre)
                             .Column(x =>
                             {
                                 x.Spacing(10);
                                 x.Item().Text($"Fișier scanat: {System.IO.Path.GetFileName(FilePath)}").FontSize(14);
                                 x.Item().Text($"Data scanării: {DateTime.Now:dd/MM/yyyy HH:mm}");
 
-                                x.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                                x.Item().LineHorizontal(1).LineColor(QuestPDF.Helpers.Colors.Grey.Lighten2);
 
-                                x.Item().PaddingTop(10).Text("Rezultat Analiză:").SemiBold().FontSize(16);
+                                x.Item().PaddingTop(10).Text("Rezultat Analiză Multimodală:").SemiBold().FontSize(16);
 
-                                
                                 var scoreColor = OverallScore > 0.5 ? QuestPDF.Helpers.Colors.Red.Medium : QuestPDF.Helpers.Colors.Green.Medium;
-                                var verdict = OverallScore > 0.5 ? "SUSPECT DE MANIPULARE (DEEPFAKE)" : "VIDEO AUTENTIC";
+                                var audioColor = AudioScore > 0.5 ? QuestPDF.Helpers.Colors.Red.Medium : QuestPDF.Helpers.Colors.Green.Medium;
+                                var verdict = (OverallScore > 0.5 || AudioScore > 0.5) ? "SUSPECT DE MANIPULARE (DEEPFAKE)" : "VIDEO/AUDIO AUTENTIC";
 
-                                x.Item().Text($"Scor de risc: {OverallScore * 100}%")
-                                 .FontSize(20).FontColor(scoreColor).SemiBold();
+                                x.Item().Text($"Scor de risc vizual (Video): {OverallScore * 100:0.00}%")
+                                 .FontSize(18).FontColor(scoreColor).SemiBold();
 
-                                x.Item().Text($"Verdict: {verdict}")
+                                x.Item().Text($"Scor de risc auditiv (Voice Cloning): {AudioScore * 100:0.00}%")
+                                 .FontSize(18).FontColor(audioColor).SemiBold();
+
+                                x.Item().Text($"Verdict Global: {verdict}")
                                  .FontSize(16).FontColor(scoreColor).Bold();
 
-                                x.Item().PaddingTop(20).Text("Acesta este un raport generat automat de aplicația CyberShield.");
+                                x.Item().PaddingTop(20).Text("Acesta este un raport de audit generat automat de platforma locală CyberShield.");
                             });
 
                         page.Footer()
@@ -268,21 +281,20 @@ public class ScanViewModel : ObservableObject
                             });
                     });
                 })
-                .GeneratePdf(ReportPath); 
+                .GeneratePdf(ReportPath);
 
-
+                StatusText = "Completed (Simulated AI)";
                 ProgressPercent = 100;
             }
             else
             {
-                
                 var progress = new Progress<ScanProgress>(p =>
                 {
                     StatusText = $"{p.Stage}: {p.Message}";
                     ProgressPercent = p.Percent;
                 });
 
-                var req = new ScanVideoRequest(
+                var req = new CyberShield.Application.UseCases.ScanVideo.ScanVideoRequest(
                     FilePath,
                     DecodeOptions: new CyberShield.Domain.Contracts.FrameDecodeOptions(10, null, true),
                     PreprocessOptions: new CyberShield.Domain.Contracts.PreprocessOptions(224, 224, true, true),
@@ -292,6 +304,7 @@ public class ScanViewModel : ObservableObject
                 var result = await _useCase.ExecuteAsync(req, progress, _cts.Token);
 
                 OverallScore = result.OverallScore;
+                AudioScore = result.OverallScore; 
                 ReportPath = result.ReportPath;
                 OverlayIntensity = Math.Clamp(result.OverallScore, 0, 1);
 

@@ -1,4 +1,7 @@
-﻿namespace CyberShield.Infrastructure.Persistence.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace CyberShield.Infrastructure.Persistence.Entities;
 
 public sealed class ScanSessionEntity
 {
@@ -10,4 +13,8 @@ public sealed class ScanSessionEntity
     public string ModelVersion { get; set; } = "";
     public double OverallScore { get; set; }
     public string Status { get; set; } = "";
+    public string? ReportPath { get; set; }
+
+    
+    public List<ScanSegmentEntity> Segments { get; set; } = new();
 }
