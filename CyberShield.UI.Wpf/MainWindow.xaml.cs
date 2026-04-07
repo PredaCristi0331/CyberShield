@@ -46,7 +46,7 @@ public partial class MainWindow : Window
 
         try
         {
-            // Verificăm dacă fișierul există fizic pe disc
+            
             if (System.IO.File.Exists(_vm.ReportPath))
             {
                 Process.Start(new ProcessStartInfo
@@ -69,7 +69,7 @@ public partial class MainWindow : Window
         }
     }
 
-    // Drag & drop UX highlight
+    
     private void Window_DragOver(object sender, DragEventArgs e)
     {
         e.Effects = DragDropEffects.Copy;

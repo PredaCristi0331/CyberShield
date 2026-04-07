@@ -18,15 +18,15 @@ public class BasicFramePreprocessorTests
         byte[] bgraBytes = new byte[2 * 2 * 4];
         for (int i = 0; i < bgraBytes.Length; i += 4)
         {
-            bgraBytes[i] = 0;     // B
-            bgraBytes[i + 1] = 0;   // G
-            bgraBytes[i + 2] = 255; // R
-            bgraBytes[i + 3] = 255; // A
+            bgraBytes[i] = 0;     
+            bgraBytes[i + 1] = 0;   
+            bgraBytes[i + 2] = 255; 
+            bgraBytes[i + 3] = 255; 
         }
 
         var dummyFrame = new VideoFrame
         {
-            Timestamp = TimeSpan.Zero, // <--- Aceasta este linia care lipsea!
+            Timestamp = TimeSpan.Zero, 
             Width = 2,
             Height = 2,
             PixelBytes = bgraBytes

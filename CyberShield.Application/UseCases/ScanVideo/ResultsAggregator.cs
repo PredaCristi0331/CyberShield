@@ -74,10 +74,10 @@ public class ResultsAggregator
                         {
                             Id = Guid.NewGuid(),
                             ScanSessionId = scanId,
-                            Start = currentStart.Value,            // Mapare corectată
-                            End = currentEnd.Value,              // Mapare corectată
-                            Score = segmentScores.Average(),     // Mapare corectată
-                            Notes = $"Peak: {segmentScores.Max() * 100:0.0}%" // Mapare corectată
+                            Start = currentStart.Value,            
+                            End = currentEnd.Value,              
+                            Score = segmentScores.Average(),     
+                            Notes = $"Peak: {segmentScores.Max() * 100:0.0}%" 
                         });
 
                         currentStart = frame.Timestamp;
@@ -95,10 +95,10 @@ public class ResultsAggregator
             {
                 Id = Guid.NewGuid(),
                 ScanSessionId = scanId,
-                Start = currentStart.Value,            // Mapare corectată
-                End = currentEnd.Value,              // Mapare corectată
-                Score = segmentScores.Average(),     // Mapare corectată
-                Notes = $"Peak: {segmentScores.Max() * 100:0.0}%" // Mapare corectată
+                Start = currentStart.Value,            
+                End = currentEnd.Value,              
+                Score = segmentScores.Average(),     
+                Notes = $"Peak: {segmentScores.Max() * 100:0.0}%" 
             });
         }
 
